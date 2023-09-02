@@ -1,6 +1,6 @@
 ---
 title: "Assignment 1: Introduction"
-author: "Student Name"
+author: "Yuechen Huang"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -40,21 +40,22 @@ Enter answers to the questions just below the >Answer: prompt.
 1. What are your previous experiences with data analytics, R, and Git? Include both formal and informal training.
 
 > Answer: 
+I self-studied R using Udemy courses 'Data Science and Machine Learning Bootcamp with R'. I also registered my Git account but didn't use that much.
 
 2. Are there any components of the course about which you feel confident?
 
-> Answer: 
+> Answer: tidyr,dplyr and ggplot. But I also want some refreshment.
 
 3. Are there any components of the course about which you feel apprehensive?
 
-> Answer: 
+> Answer: Git and Rmarkdown which I may not encourtered before. But I still want to learn.
 
 
 ## 3) GitHub
 
 Provide a link below to your forked course repository in GitHub. Make sure you have pulled all recent changes from the course repository and that you have updated your course README file, committed those changes, and pushed them to your GitHub account. 
 
-> Answer: 
+> Answer: https://github.com/YonaYuechen/ENV872_DataExploration_Fall2023
 
 ## 4) Knitting
 When you have completed this document, click the `knit` button.This should produce a PDF copy of your markdown document. Submit this PDF to Sakai. 

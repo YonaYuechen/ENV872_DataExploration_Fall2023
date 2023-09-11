@@ -40,15 +40,15 @@ Enter answers to the questions just below the >Answer: prompt.
 1. What are your previous experiences with data analytics, R, and Git? Include both formal and informal training.
 
 > Answer: 
-I self-studied R using Udemy courses 'Data Science and Machine Learning Bootcamp with R'. I also registered my Git account but didn't use that much.
+I self-studied R using Udemy courses 'Data Science and Machine Learning Bootcamp with R'. I also registered my Github account but didn't use that much.
 
 2. Are there any components of the course about which you feel confident?
 
-> Answer: tidyr,dplyr and ggplot. But I also want some refreshment.
+> Answer: tidyr,dplyr and ggplot. But I also want some refreshments.
 
 3. Are there any components of the course about which you feel apprehensive?
 
-> Answer: Git and Rmarkdown which I may not encourtered before. But I still want to learn.
+> Answer: Git and Rmarkdown which I may not encountered before. But I still want to learn.
 
 
 ## 3) GitHub

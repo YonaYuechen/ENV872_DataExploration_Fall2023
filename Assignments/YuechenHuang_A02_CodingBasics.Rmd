@@ -54,6 +54,9 @@ mean(seq1) > median(seq1) # whether mean is greater than the median, if yes retu
 8.  Label the columns of your data frame with informative titles.
 
 ```{r basics 2}
+studentname <- c('Amy', 'Jane', 'Jim', 'Sam') # the names of students
+testscore <- c(78,96,48,60) # the scores of these students
+pass <- c(TRUE,TRUE,FALSE,TRUE) # whether they passed the test or not
 
 ```
 

@@ -58,6 +58,7 @@ studentname <- c('Amy', 'Jane', 'Jim', 'Sam') # the names of students
 testscore <- c(78,96,48,60) # the scores of these students
 pass <- c(TRUE,TRUE,FALSE,TRUE) # whether they passed the test or not
 
+Stu_TestScore <- c(studentname,testscore,pass) # created a data frame
 ```
 
 9.  QUESTION: How is this data frame different from a matrix?

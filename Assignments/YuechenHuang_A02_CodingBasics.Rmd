@@ -71,11 +71,25 @@ Stu_TestScore
 11. Apply your function to the vector with test scores that you created in number 5.
 
 ```{r basics 3}
-Passing <- function(testscore){
-  
+Passing1 <- function(v_score){ # v_score is a vector of scores
+  for (grade in v_score) { # grade is a variable of grade in v_score
+    ifelse(grade >= 50, print(TRUE),print(FALSE))
+  }
 }
+Passing1(testscore)
+
+Passing2 <- function(v_score){ # v_score is a vector of scores
+  for (grade in v_score) { # grade is a variable of grade in v_score
+    if(grade >= 50){
+      print(TRUE)
+    }else{
+      print(FALSE)
+    }
+  }
+}
+Passing2(testscore)
 ```
 
 12. QUESTION: Which option of `if` and `else` vs. `ifelse` worked? Why?
 
-> Answer:
+> Answer: Both 'if''else' and 'ifelse' worked in the end. I provided the two solution of the two different methods above. 

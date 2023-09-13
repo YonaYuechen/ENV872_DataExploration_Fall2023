@@ -40,7 +40,7 @@ mean(seq1) # mean of this seq
 median(seq1) # median of this seq
 
 #3. 
-mean(seq1) > median(seq1) # whether mean is greater than the median, if yes return TRUE
+mean(seq1) > median(seq1) # if the mean is greater than the median, return TRUE
 ```
 
 ## Basics, Part 2

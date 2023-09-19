@@ -93,18 +93,21 @@ Cunningham MM, Tran L, McKee CG, et al. Honey bees as biomonitors of environment
 
 8.  Concentrations are always a numeric value. What is the class of `Conc.1..Author.` column in the dataset, and why is it not numeric?
 
-```{r}
-
+```{r concentration class}
+class(Neonics$Conc.1..Author.)
+view(Neonics)
 ```
 
-> Answer:
+> Answer: The class of `Conc.1..Author.` column is factor because some of the values are 'NR' and some values contains '/'.
 
 ## Explore your data graphically (Neonics)
 
 9.  Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year.
 
-```{r}
-
+```{r plot}
+plot1 <- ggplot(Neonics) + 
+  geom_freqpoly(aes(x = Publication.Year), bins = 15) + theme_light() + labs(x = 'Publication Year', y = 'Number of publication')
+  
 ```
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.

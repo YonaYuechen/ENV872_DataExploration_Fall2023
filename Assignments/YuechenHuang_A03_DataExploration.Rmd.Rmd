@@ -107,18 +107,20 @@ view(Neonics)
 ```{r plot}
 plot1 <- ggplot(Neonics) + 
   geom_freqpoly(aes(x = Publication.Year), bins = 15) + theme_light() + labs(x = 'Publication Year', y = 'Number of publication')
-  
+plot1
 ```
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
 
 ```{r}
-
+plot2 <- ggplot(Neonics) + 
+  geom_freqpoly(aes(x = Publication.Year, color = Test.Location), bins = 15) + theme_light() + labs(x = 'Publication Year', y = 'Number of publication')
+plot2
 ```
 
 Interpret this graph. What are the most common test locations, and do they differ over time?
 
-> Answer:
+> Answer: The most common test locations are lab and field natural. Lab experiements have a trend of increasing from 1980 to around 2014 and decreasing afterwards. Similarly, the number of natual field experiments increases and decreases. The peak of the publications of natural field experiement is around 2009.
 
 11. Create a bar graph of Endpoint counts. What are the two most common end points, and how are they defined? Consult the ECOTOX_CodeAppendix for more information. 
 

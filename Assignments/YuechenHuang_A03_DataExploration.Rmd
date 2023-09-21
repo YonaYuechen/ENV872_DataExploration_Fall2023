@@ -32,7 +32,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Ex
 
 1.  Check your working directory, load necessary packages (tidyverse, lubridate), and upload two datasets: the ECOTOX neonicotinoid dataset (ECOTOX_Neonicotinoids_Insects_raw.csv) and the Niwot Ridge NEON dataset for litter and woody debris (NEON_NIWO_Litter_massdata_2018-08_raw.csv). Name these datasets "Neonics" and "Litter", respectively. Be sure to include the subcommand to read strings in as factors.
 
-```{r set up R}
+```{r set_up_R}
 library(tidyverse)
 library(lubridate)
 
@@ -65,14 +65,14 @@ Litter
 
 5.  What are the dimensions of the dataset?
 
-```{r dimensions of dataset}
+```{r dimensions_of_dataset}
 colnames(Neonics)
 # column names refer to the dimensions of dataset
 ```
 
 6.  Using the `summary` function on the "Effect" column, determine the most common effects that are studied. Why might these effects specifically be of interest?
 
-```{r Effect of interest}
+```{r Effect_of_interest}
 summary(Neonics$Effect)
 
 ```
@@ -82,7 +82,7 @@ summary(Neonics$Effect)
 
 7.  Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.[TIP: The `sort()` command can sort the output of the summary command...]
 
-```{r Neonics common name summary}
+```{r Neonics_common_name_summary}
 summary(Neonics$Species.Common.Name)
 sort(summary(Neonics$Species.Common.Name), decreasing = TRUE) # sort the output of species common names in a descending manor
 ```
@@ -93,7 +93,7 @@ Cunningham MM, Tran L, McKee CG, et al. Honey bees as biomonitors of environment
 
 8.  Concentrations are always a numeric value. What is the class of `Conc.1..Author.` column in the dataset, and why is it not numeric?
 
-```{r concentration class}
+```{r concentration_class}
 class(Neonics$Conc.1..Author.)
 view(Neonics)
 ```
@@ -104,7 +104,7 @@ view(Neonics)
 
 9.  Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year.
 
-```{r plot}
+```{r freqploy_plot}
 plot1_NeoFreq <- ggplot(Neonics) + 
   geom_freqpoly(aes(x = Publication.Year), bins = 15) + theme_light() + labs(x = 'Publication Year', y = 'Number of publication')
 plot1_NeoFreq
@@ -112,7 +112,7 @@ plot1_NeoFreq
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
 
-```{r change color}
+```{r change_color}
 plot2_NeoFreqColor <- ggplot(Neonics) + 
   geom_freqpoly(aes(x = Publication.Year, color = Test.Location), bins = 15) + theme_light() + labs(x = 'Publication Year', y = 'Number of publication')
 plot2_NeoFreqColor
@@ -126,7 +126,7 @@ Interpret this graph. What are the most common test locations, and do they diffe
 
 [**TIP**: Add `theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))` to the end of your plot command to rotate and align the X-axis labels...]
 
-```{r bar graph of Endpoint counts}
+```{r bar_graph_of_Endpoint_counts}
 plot3_NeoBar <- ggplot(Neonics) + 
   geom_bar(aes(x = Endpoint)) + theme_light() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + labs(y = 'Counts')
 plot3_NeoBar
@@ -138,7 +138,7 @@ plot3_NeoBar
 
 12. Determine the class of collectDate. Is it a date? If not, change to a date and confirm the new class of the variable. Using the `unique` function, determine which dates litter was sampled in August 2018.
 
-```{r litter collectDate}
+```{r litter_collectDate}
 class(Litter$collectDate) # the class of collectDate is factor
 Litter$collectDate <- as.Date(Litter$collectDate, Format = "%Y-%m-%d") # change factor into date
 class(Litter$collectDate) # check the class again
@@ -147,7 +147,7 @@ unique(Litter$collectDate) # to see which dates litter was sampled
 
 13. Using the `unique` function, determine how many plots were sampled at Niwot Ridge. How is the information obtained from `unique` different from that obtained from `summary`?
 
-```{r plots sampled at Niwot Ridge}
+```{r plots_sampled_at_Niwot_Ridge}
 unique(Litter$fieldSampleID) # to see how many unique values are in the column fieldSampleID
 summary(Litter$fieldSampleID)
 ```
@@ -156,7 +156,7 @@ summary(Litter$fieldSampleID)
 
 14. Create a bar graph of functionalGroup counts. This shows you what type of litter is collected at the Niwot Ridge sites. Notice that litter types are fairly equally distributed across the Niwot Ridge sites.
 
-```{r litter bar graph}
+```{r litter_bar_graph}
 plot4_litterBar <- ggplot(Litter) + 
   geom_bar(aes(x = functionalGroup)) + theme_light() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + labs(y = 'Counts', x = 'Functional Group')
 plot4_litterBar
@@ -164,7 +164,7 @@ plot4_litterBar
 
 15. Using `geom_boxplot` and `geom_violin`, create a boxplot and a violin plot of dryMass by functionalGroup.
 
-```{r litter dryMass by boxplot and violin plot}
+```{r litter_dryMass_by_boxplot_violin_plot}
 # box plot
 plot5_litterBox <- ggplot(Litter) + 
   geom_boxplot(aes(x = functionalGroup, y = dryMass)) + theme_light() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + labs(y = 'Dry Mass', x = 'Functional Group')

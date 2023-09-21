@@ -3,6 +3,7 @@ title: 'Assignment 3: Data Exploration'
 author: "Yuechen Huang"
 date: "Fall 2023"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 geometry: margin=2.54cm
@@ -41,8 +42,8 @@ library(lubridate)
 Neonics <- read.csv('D:/ENV872_DataExploration/ENV872_DataExploration_Fall2023/Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv', stringsAsFactors = TRUE)
 Litter <- read.csv('D:/ENV872_DataExploration/ENV872_DataExploration_Fall2023/Data/Raw/NEON_NIWO_Litter_massdata_2018-08_raw.csv', stringsAsFactors = TRUE)
 
-Neonics
-Litter
+summary(Neonics)
+summary(Litter)
 ```
 
 ## Learn about your system
@@ -60,7 +61,7 @@ Litter
 
 > Answer: 
  1. Litter and fine woody debris sampling is executed at terrestrial NEON sites that contain woody vegetation >2m tall.
- 2. Ground traps are sampled once per year.  Target sampling frequency for elevated traps varies by vegetation present at the site, with frequent sampling (1x every 2weeks) in deciduous forest sites during senescence, and infrequent year-round sampling (1x every 1-2 months) at evergreen sites. 
+ 2. Ground traps are sampled once per year.  Target sampling frequency for elevated traps varies by vegetation present at the site, with frequent sampling (1x every 2 weeks) in deciduous forest sites during senescence, and infrequent year-round sampling (1x every 1-2 months) at evergreen sites. 
  3. In sites with forested tower airsheds, the litter sampling is targeted to take place in 20 40m x 40m plots. 
 
 ## Obtain basic summaries of your data (Neonics)
@@ -76,7 +77,6 @@ colnames(Neonics)
 
 ```{r Effect_of_interest}
 summary(Neonics$Effect)
-
 ```
 
 > Answer: Population seems to be of interest as 1803 studies are population studies and mortality is the second (1493). The reason why population study is the most popular catagory may be that population study is the basic study for ecotoxicity. Most of the studies need to be done in population level to confirm the toxicity level before further research.
@@ -97,7 +97,6 @@ Cunningham MM, Tran L, McKee CG, et al. Honey bees as biomonitors of environment
 
 ```{r concentration_class}
 class(Neonics$Conc.1..Author.)
-view(Neonics)
 ```
 
 > Answer: The class of `Conc.1..Author.` column is factor because some of the values are 'NR' and some values contains '/'.
@@ -166,7 +165,7 @@ plot4_litterBar
 
 15. Using `geom_boxplot` and `geom_violin`, create a boxplot and a violin plot of dryMass by functionalGroup.
 
-```{r litter_dryMass_by_boxplot_violin_plot}
+```{r litter_dryMass_plot}
 # box plot
 plot5_litterBox <- ggplot(Litter) + 
   geom_boxplot(aes(x = functionalGroup, y = dryMass)) + theme_light() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + labs(y = 'Dry Mass', x = 'Functional Group')

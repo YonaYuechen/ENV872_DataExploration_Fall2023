@@ -54,7 +54,7 @@ NTL.nutrient.data.PeterPaul <-
   NTL.nutrient.data.PeterPaul %>% #
   mutate(month = month(sampledate)) %>% #
   select(lakeid:daynum, month, sampledate:comments) %>% # 
-  drop_na(depth)
+  drop_na(depth) # drop all depth NA values
 
 # Save processed nutrient file
 write.csv(NTL.nutrient.data.PeterPaul, row.names = FALSE, 
@@ -90,7 +90,7 @@ We will work with the new functions from `tidyr`. For gather we will use `pivot_
 # Gather nutrient data into one column using pivot_longer
 NTL.nutrient.data.PeterPaul.gathered <- pivot_longer(NTL.nutrient.data.PeterPaul.subset,tn_ug:po4, names_to = "nutrient", values_to = "concentration")
 
-NTL.nutrient.data.PeterPaul.gathered <- subset(NTL.nutrient.data.PeterPaul.gathered, !is.na(concentration))
+NTL.nutrient.data.PeterPaul.gathered <- subset(NTL.nutrient.data.PeterPaul.gathered, !is.na(concentration)) # remove all values that have n/a concentration
 count(NTL.nutrient.data.PeterPaul.gathered, nutrient)
 
 write.csv(NTL.nutrient.data.PeterPaul.gathered, row.names = FALSE, 
@@ -150,10 +150,10 @@ However, there are 20 months in this dataset, so importing all these files indiv
 
 ```{r import many datasets}
 LitterFiles = list.files(path = "./Data/Raw/NIWO_Litter/", pattern="*.csv", full.names=TRUE)
-LitterFiles
+LitterFiles  # list.files() can list all the files that we want in a folder 
 
 Litter <- LitterFiles %>%
-  plyr::ldply(read.csv)
+  plyr::ldply(read.csv)  ## read all files and join all files? But how does ldply work?
 ```
 
 We also have information about individual traps, including the location and type of landcover. Let's join these two datasets. Note that "siteID", "plotID" and "trapID" exist in both datasets, and we can join them by these conditions. Notice the dimensions of the final dataset.
@@ -187,7 +187,7 @@ NTL.PeterPaul.summaries <-
             meanTN = mean(tn_ug), 
             sdTN = sd(tn_ug), 
             meanTP = mean(tp_ug), 
-            sdTP = sd(tp_ug))
+            sdTP = sd(tp_ug))  # summary can be very useful!
 
 write.csv(NTL.PeterPaul.summaries, row.names = FALSE, 
           file ="./Data/Processed/NTL-LTER_Lake_Summaries_PeterPaul_Processed.csv")

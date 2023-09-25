@@ -27,15 +27,15 @@ getwd()
 library(tidyverse)
 #install.packages(lubridate)
 library(lubridate)
-NTL.phys.data <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv", stringsAsFactors = TRUE)
+NTL.phys.data <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv", stringsAsFactors = TRUE)  # stringsAsFactors = TRUE very important when importing data
 
 colnames(NTL.phys.data)
 head(NTL.phys.data)
 summary(NTL.phys.data)
-str(NTL.phys.data)
+str(NTL.phys.data) # 
 dim(NTL.phys.data)
 
-class(NTL.phys.data$sampledate)
+class(NTL.phys.data$sampledate) # always check if date are date type of data
 # Format sampledate as date
 NTL.phys.data$sampledate <- as.Date(NTL.phys.data$sampledate, format = "%m/%d/%y")
 ```
@@ -55,8 +55,21 @@ What is the best way to wrangle data? There are multiple ways to arrive at a spe
 `dplyr` is a package in R that includes functions for data manipulation (i.e., data wrangling or data munging). `dplyr` is included in the tidyverse package, so you should already have it installed on your machine. The functions act as verbs for data wrangling processes. For more information, run this line of code:
 
 ```{r, results = "hide"}
-vignette("dplyr")
+vignette("dplyr")  ## can find more infor here
+## Rows:
+#filter() chooses rows based on column values.
+#slice() chooses rows based on location.
+#arrange() changes the order of the rows.
+## Columns:
+#select() changes whether or not a column is included.
+#rename() changes the name of columns.
+#mutate() changes the values of columns and creates new columns.
+#relocate() changes the order of the columns.
+## Groups of rows:
+#summarise() collapses a group into a single row.
 ```
+
+
 
 ### Filter
 
@@ -69,8 +82,8 @@ Here are the relevant commands used in the `filter` function. Add some notes to 
 `<=`
 `>`
 `>=`
-`&`
-`|`
+`&` AND
+`|` OR*
 
 ```{r filtering data}
 class(NTL.phys.data$lakeid)
@@ -98,7 +111,7 @@ NTL.phys.data.PeterPaul2 <- filter(NTL.phys.data, lakename != "Central Long Lake
                                      lakename != "Crampton Lake" & lakename != "East Long Lake" &
                                      lakename != "Hummingbird Lake" & lakename != "Tuesday Lake" &
                                      lakename != "Ward Lake" & lakename != "West Long Lake")
-NTL.phys.data.PeterPaul3 <- filter(NTL.phys.data, lakename %in% c("Paul Lake", "Peter Lake"))
+NTL.phys.data.PeterPaul3 <- filter(NTL.phys.data, lakename %in% c("Paul Lake", "Peter Lake"))  # %in% useful when having multiple OR together
 
 # Choose a range of conditions of a numeric or integer variable
 summary(NTL.phys.data$daynum)
@@ -140,7 +153,7 @@ NTL.phys.data.depth.descending <- arrange(NTL.phys.data, desc(depth))
 Selecting allows us to choose certain columns (variables) in our dataset.
 
 ```{r selecting columns}
-NTL.phys.data.temps <- select(NTL.phys.data, lakename, sampledate:temperature_C)
+NTL.phys.data.temps <- select(NTL.phys.data, lakename, sampledate:temperature_C) # because sampledata and temperature_c are next to each other can just use :
 
 ```
 ### Mutate
@@ -161,11 +174,12 @@ A package that makes coercing date much easier is `lubridate`. A guide to the pa
 NTL.phys.data.PeterPaul1 <- mutate(NTL.phys.data.PeterPaul1, month = month(sampledate)) 
 
 # reorder columns to put month with the rest of the date variables
-NTL.phys.data.PeterPaul1 <- select(NTL.phys.data.PeterPaul1, lakeid:daynum, month, sampledate:comments)
+NTL.phys.data.PeterPaul1 <- select(NTL.phys.data.PeterPaul1, lakeid:daynum, month, sampledate:comments)  # put month between other column
 
 # find out the start and end dates of the dataset
 interval(NTL.phys.data.PeterPaul1$sampledate[1], NTL.phys.data.PeterPaul1$sampledate[21613])
-interval(first(NTL.phys.data.PeterPaul1$sampledate), last(NTL.phys.data.PeterPaul1$sampledate))
+
+interval(first(NTL.phys.data.PeterPaul1$sampledate), last(NTL.phys.data.PeterPaul1$sampledate)) # same as [1] and [21613]; will return the first value --- the last value
 ```
 
 

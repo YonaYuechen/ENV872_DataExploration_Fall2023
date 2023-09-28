@@ -82,18 +82,26 @@ O3_2018_select <- select(O3_2018, Date, DAILY_AQI_VALUE, Site.Name,
 O3_2019_select <- select(O3_2019, Date, DAILY_AQI_VALUE, Site.Name, 
                          AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, 
                          SITE_LONGITUDE)
-PM25_2018_select <- select(PM25_2018, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
-PM25_2019_select <- select(PM25_2019, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+PM25_2018_select <- select(PM25_2018, Date, DAILY_AQI_VALUE, Site.Name,
+                           AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE,
+                           SITE_LONGITUDE)
+PM25_2019_select <- select(PM25_2019, Date, DAILY_AQI_VALUE, Site.Name,
+                           AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE,
+                           SITE_LONGITUDE)
 
 #5 changed AQS
 PM25_2018_AQS <- mutate(PM25_2018_select, AQS_PARAMETER_DESC = 'PM2.5')
 PM25_2019_AQS <- mutate(PM25_2019_select, AQS_PARAMETER_DESC = 'PM2.5')
 
 #6 save files
-write.csv(O3_2018_select, row.names = FALSE, file = './Data/Processed/EPAair_O3_NC2018_processed.csv')
-write.csv(O3_2019_select, row.names = FALSE, file = './Data/Processed/EPAair_O3_NC2019_processed.csv')
-write.csv(PM25_2018_AQS, row.names = FALSE, file = './Data/Processed/EPAair_PM25_NC2018_processed.csv')
-write.csv(PM25_2019_AQS, row.names = FALSE, file = './Data/Processed/EPAair_PM25_NC2019_processed.csv')
+write.csv(O3_2018_select, row.names = FALSE, 
+          file = './Data/Processed/EPAair_O3_NC2018_processed.csv')
+write.csv(O3_2019_select, row.names = FALSE, 
+          file = './Data/Processed/EPAair_O3_NC2019_processed.csv')
+write.csv(PM25_2018_AQS, row.names = FALSE, 
+          file = './Data/Processed/EPAair_PM25_NC2018_processed.csv')
+write.csv(PM25_2019_AQS, row.names = FALSE, 
+          file = './Data/Processed/EPAair_PM25_NC2019_processed.csv')
 ```
 
 

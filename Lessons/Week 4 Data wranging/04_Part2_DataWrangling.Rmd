@@ -187,7 +187,7 @@ NTL.PeterPaul.summaries <-
             meanTN = mean(tn_ug), 
             sdTN = sd(tn_ug), 
             meanTP = mean(tp_ug), 
-            sdTP = sd(tp_ug))  # summary can be very useful!
+            sdTP = sd(tp_ug))  # summarise can be very useful! NOT summary()!
 
 write.csv(NTL.PeterPaul.summaries, row.names = FALSE, 
           file ="./Data/Processed/NTL-LTER_Lake_Summaries_PeterPaul_Processed.csv")

@@ -138,16 +138,20 @@ write.csv(EPA_wide, row.names = FALSE, file = 'D:/ENV872_DataExploration/ENV872_
 
 13. Call up the dimensions of the summary dataset.
 
-```{r}
+```{r summary tables}
 
-#12
-
-
+#12 
+EPA_summary <- EPA_wide %>% group_by(Site.Name,Month,Year) %>% 
+  summarize(Mean_PM2.5 = mean(PM2.5),
+            Mean_O3 = mean(Ozone)) %>% 
+  drop_na(Mean_O3)
+  
 #13
-
-
+dim(EPA_summary)
 ```
 
 14. Why did we use the function `drop_na` rather than `na.omit`?
 
 > Answer: 
+1. 'drop_na' provides more flexibility than 'na.omit'. We need to decide which column to consider when dropping rows which can only be done using 'drop_na'
+2. 'drop_na' is more comparible to tidyverse functions such as 'filter' and 'summarize'

@@ -63,7 +63,11 @@ NEON.litter$collectDate <-
 
 ```{r build plot theme}
 #3
-
+Yuechen_theme <- theme_classic(base_size = 13) + 
+  theme(plot.title = element_text(color = 'black', size = 14, face = 'bold')) +
+  theme(axis.text =  element_text(size = rel(0.9))) + 
+  theme(axis.title = element_text(face = 'italic'))
+  
 ```
 
 ## Create graphs
@@ -73,7 +77,13 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 
 ```{r plot total P vs PO4}
 #4 
-
+ug_phosphate_plot <- ggplot(data = PeterPaul.chem.nutrients, 
+                            aes(x = tp_ug, y = po4, color = lakename)) +
+  geom_point() + geom_smooth(method = lm, color = 'black') +
+  xlim(0,150) + ylim(0, 50) + 
+  labs(x = 'Total phosphorus', y = 'Phosphate', title = 'Total phosphrus and phosphate in Peter and Paul lakes') + 
+  Yuechen_theme
+ug_phosphate_plot
 ```
 
 

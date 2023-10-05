@@ -143,10 +143,30 @@ Question: What do you observe about the variables of interest over seasons and b
 
 ```{r Plot litter}
 #6
-
+Needle_litter <- filter(NEON.litter, functionalGroup == 'Needles')
+dryMass_plot_color <- ggplot(Needle_litter, aes(x = as.factor(collectDate), y = dryMass)) + geom_bar(stat="identity", position = 'dodge', aes(fill = nlcdClass)) + labs(x = 'Date', y = 'Dry Mass') + scale_fill_discrete(name = 'Landuse Class', labels = c('Evergreen Forest', 'Grassland Herbaceous', 'Shrub Scrub'))
+dryMass_plot_color
 
 #7
+dryMass_plot_evergreen <- ggplot(
+  data = filter(Needle_litter, nlcdClass == 'evergreenForest'), aes(x = as.factor(collectDate), y = dryMass)) + 
+  geom_bar(stat="identity", position = 'dodge') + 
+  labs(x = 'Date', y = 'Dry Mass') + Yuechen_theme
+dryMass_plot_evergreen
 
+dryMass_plot_grassland <- ggplot(data = filter(Needle_litter, nlcdClass == 'grasslandHerbaceous'), aes(x = as.factor(collectDate), y = dryMass)) +
+  geom_bar(stat="identity", position = 'dodge') + 
+  labs(x = 'Date', y = 'Dry Mass') + 
+  Yuechen_theme
+dryMass_plot_grassland
+
+dryMass_plot_shrub <- ggplot(data = filter(Needle_litter, nlcdClass == 'shrubScrub'), aes(x = as.factor(collectDate), y = dryMass)) +
+  geom_bar(stat="identity", position = 'dodge') + 
+  labs(x = 'Date', y = 'Dry Mass') + 
+  Yuechen_theme
+dryMass_plot_shrub
+
+plot_grid()
 
 ```
 Question: Which of these plots (6 vs. 7) do you think is more effective, and why? 

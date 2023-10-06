@@ -30,7 +30,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Vi
 
 2. Make sure R is reading dates as date format; if not change the format to date.
 
-```{r initialize project}
+```{r initialize project, message = FALSE}
 #1 Load packages and data
 library(tidyverse)
 library(lubridate)
@@ -40,8 +40,8 @@ library(cowplot)
 getwd()
 
 PeterPaul.chem.nutrients <- 
-  read.csv(here("Data/Processed_KEY/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv"), 
-           stringsAsFactors = TRUE)
+  read.csv(here(
+  "Data/Processed_KEY/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv"), stringsAsFactors = TRUE)
 NEON.litter <- 
   read.csv(here("Data/Processed_KEY/NEON_NIWO_Litter_mass_trap_Processed.csv"), stringsAsFactors = TRUE)
 
@@ -75,7 +75,7 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 
 4. [NTL-LTER] Plot total phosphorus (`tp_ug`) by phosphate (`po4`), with separate aesthetics for Peter and Paul lakes. Add a line of best fit and color it black. Adjust your axes to hide extreme values (hint: change the limits using `xlim()` and/or `ylim()`).
 
-```{r plot total P vs PO4}
+```{r plot total P}
 #4 
 ug_phosphate_plot <- ggplot(data = PeterPaul.chem.nutrients, 
                             aes(x = tp_ug, y = po4, color = lakename)) +
@@ -102,7 +102,7 @@ tem_box_plot <- ggplot(data = PeterPaul.chem.nutrients,
   geom_boxplot() + scale_x_discrete(name = 'Month',drop = FALSE) + 
   labs(y = 'Temperature (°C)', fill = 'Lake Name') + 
   geom_jitter(color="grey", size=0.7, alpha=0.15) +
-  Yuechen_theme 
+  Yuechen_theme
 tem_box_plot
 
 TP_box_plot <- ggplot(data = PeterPaul.chem.nutrients, 
@@ -129,7 +129,8 @@ gather_plot <- plot_grid(tem_box_plot + theme(legend.position="none"),
           nrow = 3, ncol = 1, align = 'h') 
 gather_plot
 legend_com <- get_legend(tem_box_plot + theme(legend.position="right"))
-gather_plot_legend <- plot_grid(gather_plot, legend_com, nrow = 1, rel_widths = c(5,1))
+gather_plot_legend <- plot_grid(gather_plot, legend_com, 
+                                nrow = 1, rel_widths = c(5,1))
 gather_plot_legend
 ```
 
@@ -160,7 +161,9 @@ dryMass_plot_grassland <- ggplot(data = filter(Needle_litter, nlcdClass == 'gras
   Yuechen_theme
 dryMass_plot_grassland
 
-dryMass_plot_shrub <- ggplot(data = filter(Needle_litter, nlcdClass == 'shrubScrub'), aes(x = collectDate, y = dryMass)) +
+dryMass_plot_shrub <- ggplot(data = filter(Needle_litter, 
+                                           nlcdClass == 'shrubScrub'), 
+                             aes(x = collectDate, y = dryMass)) +
   geom_bar(stat="identity", position = 'dodge') + 
   labs(x = 'Date', y = 'Dry Mass') + 
   Yuechen_theme
@@ -168,9 +171,9 @@ dryMass_plot_shrub
 
 gather_dryMass <- plot_grid(dryMass_plot_evergreen, dryMass_plot_grassland, 
           dryMass_plot_shrub, nrow = 3, 
-          labels = c('Evergreen','grassland', 'shrub'))
+          labels = c('Evergreen','Grassland','   Shrub'), 
+          hjust = -0.6, align = 'left')
 gather_dryMass
-
 ```
 Question: Which of these plots (6 vs. 7) do you think is more effective, and why? 
 

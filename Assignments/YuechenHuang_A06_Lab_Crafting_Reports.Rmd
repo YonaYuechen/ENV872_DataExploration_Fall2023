@@ -109,7 +109,7 @@ ozoneMon18 <- ggplot(data = filter(epa_data, Year == '2018'),
 print(ozoneMon18)
 ```
 
-\
+
 Recorded Ozone by Month (2019)
 ```{r figure 2, echo=FALSE, fig.cap='Monthly Ozone, 2019', fig.height=3.5, message=FALSE, warning=FALSE, fig.align = 'left'}
 ozoneMon19 <- ggplot(data = filter(epa_data, Year == '2019'), 

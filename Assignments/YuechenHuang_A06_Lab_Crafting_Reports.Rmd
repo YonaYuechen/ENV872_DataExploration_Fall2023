@@ -101,7 +101,6 @@ kable(summary_Ozone, caption = "Mean Ozone", col.names = c('County', '$\\mu g/m^
 Create two separate code chunks that create boxplots of the distribution of Ozone levels by month using, one for only records collected in 2018 and one for records in 2019. Customize the chunk options such that the final figures are displayed but not the code used to generate the figures. In addition, align the plots on the left side of the page and set the figure heights so both plots fit on the same page with minimal space remaining. Lastly, add a `fig.cap` chunk option to add a caption (title) to your plot that will display underneath the figure.
 
 Recorded Ozone by Month (2018)
-
 ```{r figure 1, echo=FALSE, fig.cap='Monthly Ozone, 2018', fig.height=3.5, message=FALSE, warning=FALSE, fig.align = 'left'}
 ozoneMon18 <- ggplot(data = filter(epa_data, Year == '2018'), 
                      aes(x = factor(Month,levels = 1:12, labels = month.abb), 
@@ -110,6 +109,7 @@ ozoneMon18 <- ggplot(data = filter(epa_data, Year == '2018'),
 print(ozoneMon18)
 ```
 
+\
 Recorded Ozone by Month (2019)
 ```{r figure 2, echo=FALSE, fig.cap='Monthly Ozone, 2019', fig.height=3.5, message=FALSE, warning=FALSE, fig.align = 'left'}
 ozoneMon19 <- ggplot(data = filter(epa_data, Year == '2019'), 
@@ -118,11 +118,11 @@ ozoneMon19 <- ggplot(data = filter(epa_data, Year == '2019'),
   labs(x = 'Month', y = expression(paste("Concentration ( ", mu, "g/", m^3, ')')))
 print(ozoneMon19)
 ```
----
 
+---
 \newpage
 ## Task 4: Knit and submit.
 Add a table of contents to your document and knit to a PDF. Submit your PDF to Sakai, but also be sure to commit and push your Rmd file used to create this knit document to GitHub. In the section below, add a link to your GitHub repository. 
 
 ## Git Repository
-
+https://github.com/YonaYuechen/ENV872_DataExploration_Fall2023

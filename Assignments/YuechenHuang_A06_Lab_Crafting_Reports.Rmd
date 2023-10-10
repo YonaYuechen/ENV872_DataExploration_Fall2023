@@ -3,6 +3,7 @@ title: 'A06 - Crafting Reports'
 author: "Yuechen Huang" 
 date: "Fall 2023"
 output: pdf_document
+toc : TRUE
 ---
 
 ## Objectives:
@@ -24,9 +25,15 @@ output: pdf_document
 ## Task 1 - Basic Markdown
 
 Using markdown, create a table beneath the `Table: EPA Air Quality` line below that summarizes the metadata of the EPA Air Quality data. The first column should have the header "Item" and should include the the three metadata attribute item names: "Source", "Date", and "Filename". The second column should have the header "Value" and include the metadata values: "EPA Air Quality System (AQS)", "2018-2019", and "EPAair_O3_PM25_NC1819_Processed.csv". The first column should be aligned to the right and the second to the left.
+```{r data wrangling, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse);library(here);library(lubridate)
 
-Table: EPA Air Quality
+item_name <- c('Source', "Date", "Filename")
+value <- c("EPA Air Quality System (AQS)", "2018-2019", "EPAair_O3_PM25_NC1819_Processed.csv")
+EPA_air <- cbind(item_name,value)
 
+knitr::kable(EPA_air, caption = 'EPA Air Quality', col.names = c('Item Name', 'Value'), align = c('r', 'l'))
+```
 
 ---
 
@@ -34,7 +41,7 @@ Table: EPA Air Quality
 
 Set the following R code chunk so that it runs when knit, but no messages, errors, or any output is shown. The code itself, however, should be displayed.
 
-```{r project.setup}
+```{r project.setup, message=FALSE, warning=FALSE, results='hide'}
 #Import libraries
 library(tidyverse);library(lubridate);library(here);library(knitr)
 
@@ -60,7 +67,7 @@ Customize the chunk options such that the code is run but is not displayed in th
 > -   If your output table spans across two pages, try inserting a page break in the markdown just before your code chunk.
 
 
-```{r data.summary}
+```{r data.summary, echo=FALSE}
 #Compute mean PM2.5 concentration for each county, sorted by value
 summary_PM25 <- epa_data %>% 
   drop_na(PM2.5) %>% 
@@ -76,7 +83,14 @@ summary_Ozone <- epa_data %>%
     mean_Ozone = mean(Ozone)) %>% 
   arrange(mean_Ozone)
 
+```
+
+\newpage
+```{r table, echo=FALSE}
 #Use the `kable` function to produce the 2 tables in markdown format
+kable(summary_PM25, caption = 'Mean Particulates (2.5mm)', col.names = c("County", '$\\mu g/m^3$'))
+
+kable(summary_Ozone, caption = "Mean Ozone", col.names = c('County', '$\\mu g/m^3$'))
 
 ```
 
@@ -86,11 +100,27 @@ summary_Ozone <- epa_data %>%
 
 Create two separate code chunks that create boxplots of the distribution of Ozone levels by month using, one for only records collected in 2018 and one for records in 2019. Customize the chunk options such that the final figures are displayed but not the code used to generate the figures. In addition, align the plots on the left side of the page and set the figure heights so both plots fit on the same page with minimal space remaining. Lastly, add a `fig.cap` chunk option to add a caption (title) to your plot that will display underneath the figure.
 
+Recorded Ozone by Month (2018)
 
+```{r figure 1, echo=FALSE, fig.cap='Monthly Ozone, 2018', fig.height=3.5, message=FALSE, warning=FALSE, fig.align = 'left'}
+ozoneMon18 <- ggplot(data = filter(epa_data, Year == '2018'), 
+                     aes(x = factor(Month,levels = 1:12, labels = month.abb), 
+                         y = Ozone)) + geom_boxplot() + 
+  labs(x = 'Month', y = expression(paste("Concentration ( ", mu, "g/", m^3, ')')))
+print(ozoneMon18)
+```
 
+Recorded Ozone by Month (2019)
+```{r figure 2, echo=FALSE, fig.cap='Monthly Ozone, 2019', fig.height=3.5, message=FALSE, warning=FALSE, fig.align = 'left'}
+ozoneMon19 <- ggplot(data = filter(epa_data, Year == '2019'), 
+                     aes(x = factor(Month,levels = 1:12, labels = month.abb), 
+                         y = Ozone)) + geom_boxplot() + 
+  labs(x = 'Month', y = expression(paste("Concentration ( ", mu, "g/", m^3, ')')))
+print(ozoneMon19)
+```
 ---
-\newpage
 
+\newpage
 ## Task 4: Knit and submit.
 Add a table of contents to your document and knit to a PDF. Submit your PDF to Sakai, but also be sure to commit and push your Rmd file used to create this knit document to GitHub. In the section below, add a link to your GitHub repository. 
 

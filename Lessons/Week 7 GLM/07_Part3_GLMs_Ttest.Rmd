@@ -77,7 +77,7 @@ Ozone.plot <- ggplot(EPAair, aes(x = Ozone)) +
 print(Ozone.plot)
 
 # Format as a GLM
-O3.onesample2 <- lm(Ozone ~ 1, EPAair)
+O3.onesample2 <- lm(Ozone ~ 1, EPAair) # ~1 means only intersect
 O3.onesample2
 ```
 

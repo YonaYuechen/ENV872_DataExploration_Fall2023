@@ -36,7 +36,7 @@ NTL_raw <- read.csv(here("Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv"), str
 NTL_raw$sampledate <- as.Date(NTL_raw$sampledate, '%m/%d/%y')
 
 #2
-YH_Theme <- theme_minimal(base_size = 14) + 
+YH_Theme <- theme_classic(base_size = 14) + 
   theme(axis.text = element_text(color = "black"), 
         legend.position = "bottom")
 theme_set(YH_Theme)
@@ -48,8 +48,8 @@ Our first research question is: Does mean lake temperature recorded during July 
 
 3. State the null and alternative hypotheses for this question:
 > Answer:
-H0: 
-Ha: 
+H0: The mean lake temperature in July in all lakes among all depths show no difference
+Ha: There is difference of the mean lake temperature in July in different lakes or among different depths
 
 
 4.  Wrangle your NTL-LTER dataset with a pipe function so that the records meet the following criteria: 
@@ -61,31 +61,41 @@ Ha:
 
 ```{r scatterplot}
 #4
-
+NTL_processed <- NTL_raw %>% mutate(Month = month(sampledate)) %>% 
+  filter(Month == 7) %>% group_by(lakename,year4,daynum,depth) %>% 
+    summarise(mean_temp = mean(temperature_C)) %>% drop_na()
 
 #5
-
-
+plot_temp_depth <- ggplot(data = NTL_processed, 
+                          aes(x = depth, y = mean_temp, color = lakename)) +
+  ylim(0, 35) + geom_point() + scale_color_brewer(palette="Paired") + 
+  geom_smooth(method = "lm", se = FALSE) + YH_Theme + labs(x = "Depth", y = "Temperature (°C)", color = 'Lake Names')
+plot_temp_depth
 ```
 
 
 6. Interpret the figure. What does it suggest with regards to the response of temperature to depth? Do the distribution of points suggest about anything about the linearity of this trend?
 
-> Answer: 
+> Answer: For all lakes, as the depth of the lake goes up, the temperature decreases. The distribution of the points suggests that it is more likely to be polynomial curves. 
 
 
 7. Perform a linear regression to test the relationship and display the results
 
 ```{r linear.regression}
 #7
+linear_reg <- lm(data = NTL_processed,
+  mean_temp ~ depth)
+summary(linear_reg)
 
-
+par(mfrow = c(2,2), mar=c(4,4,4,4))
+plot(linear_reg)
+par(mfrow = c(1,1))
 ```
 
 
 8. Interpret your model results in words. Include how much of the variability in temperature is explained by changes in depth, the degrees of freedom on which this finding is based, and the statistical significance of the result. Also mention how much temperature is predicted to change for every 1m change in depth. 
 
-> Answer:
+> Answer: The variability in temperature is highly explained by the changes in depth as the R squared value is equare to 0.7387 which is quite high and the degree of freedom is 9726 meaning that the pool of variables is quite big as well. We got a p value of <2e-16 which means the result is significant. For every 1 m changes in depth, temperature is predicted to change -1.94621. 
 
 
 ---

@@ -38,7 +38,9 @@ NTL_raw$sampledate <- as.Date(NTL_raw$sampledate, '%m/%d/%y')
 #2
 YH_Theme <- theme_classic(base_size = 14) + 
   theme(axis.text = element_text(color = "black"), 
-        legend.position = "bottom")
+        legend.position = "right",
+        legend.text = element_text(size = 10),
+        legend.title = element_text(size = 11))
 theme_set(YH_Theme)
 
 ```
@@ -67,9 +69,10 @@ NTL_processed <- NTL_raw %>% mutate(Month = month(sampledate)) %>%
 
 #5
 plot_temp_depth <- ggplot(data = NTL_processed, 
-                          aes(x = depth, y = mean_temp, color = lakename)) +
-  ylim(0, 35) + geom_point() + scale_color_brewer(palette="Paired") + 
-  geom_smooth(method = "lm", se = FALSE) + YH_Theme + labs(x = "Depth", y = "Temperature (°C)", color = 'Lake Names')
+                          aes(x = depth, y = mean_temp)) +
+  ylim(0, 35) + geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) + YH_Theme + 
+  labs(x = "Depth", y = "Temperature (°C)")
 plot_temp_depth
 ```
 
@@ -110,17 +113,18 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 ```{r temperature.model}
 #9
-
-
+LTER_AIC <- lm(data = NTL_processed, mean_temp ~ year4 + daynum + depth)
+step(LTER_AIC)
 
 #10
-
+LTER_model <- lm(data = NTL_processed, mean_temp ~ year4 + daynum + depth)
+summary(LTER_model)
 
 ```
 
 11. What is the final set of explanatory variables that the AIC method suggests we use to predict temperature in our multiple regression? How much of the observed variance does this model explain? Is this an improvement over the model using only depth as the explanatory variable?
 
-> Answer: 
+> Answer: The final set of explanatory variables are all three variables (year4, daynum and depth). The R square of this model is 0.7412 meaning the observed variance is explained well using the three variables. This is an improvement over the model using only depth as the explanatory variable because the AIC value of this model (26066) is much lower than only depth (26148). 
 
 
 
@@ -131,13 +135,16 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 ```{r anova.model}
 #12
+TempLake_Aov <- aov(data = NTL_processed, mean_temp ~ lakename)
+summary(TempLake_Aov)
 
-
+TempLake_Aov_linear <- lm(data = NTL_processed, mean_temp ~ lakename)
+summary(TempLake_Aov_linear)
 ```
 
 13. Is there a significant difference in mean temperature among the lakes? Report your findings. 
 
-> Answer: 
+> Answer: There is a significant difference in mean temperature among lakes as the P value is less than 2.2e-16. The mean depth of Central Long Lake is significantly different to other lakes. Yet, the R square value is less than 0.04 meaning that other variables may also needed to explain the mean temperature changes. 
 
 
 
@@ -145,7 +152,12 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 ```{r scatterplot.2}
 #14.
-
+plot_temp_depth_lake <- ggplot(data = NTL_processed, 
+                          aes(x = depth, y = mean_temp, color = lakename)) +
+  ylim(0, 35) + geom_point(alpha = 0.5) + scale_color_brewer(palette="Paired") + 
+  geom_smooth(method = "lm", se = FALSE) + YH_Theme + 
+  labs(x = "Depth", y = "Temperature (°C)", color = 'Lake Names')
+plot_temp_depth_lake
 
 ```
 
@@ -153,26 +165,28 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 ```{r tukey.test}
 #15
-
+TukeyHSD(TempLake_Aov)
 
 ```
 
 16.From the findings above, which lakes have the same mean temperature, statistically speaking, as Peter Lake? Does any lake have a mean temperature that is statistically distinct from all the other lakes?
 
->Answer:
+>Answer: Paul Lake and Ward Lake have the same mean temperature as the p values of Paul Lake and Ward Lake compared to Peter Lake are 0.22 and 0.78 respectively which are not less than 0.05. There is not lake that is statistically distinct from all other lakes. These lakes have similar temperatures in pairs.
 
- 
 
 17. If we were just looking at Peter Lake and Paul Lake. What's another test we might explore to see whether they have distinct mean temperatures? 
 
->Answer: 
+>Answer: We can use two-tailed two-sample T-test. 
 
 
 
 18. Wrangle the July data to include only records for Crampton Lake and Ward Lake. Run the two-sample T-test on these data to determine whether their July temperature are same or different. What does the test say? Are the mean temperatures for the lakes equal? Does that match you answer for part 16?
 
 ```{r t.test}
-
+NTL_CramWard <- NTL_processed %>% 
+  filter(lakename == 'Crampton Lake' | lakename == 'Ward Lake')
+CramWard_Ttest <- t.test(NTL_CramWard$mean_temp ~ NTL_CramWard$lakename)
+CramWard_Ttest
 ```
 
->Answer: 
+>Answer: The T test result shows that the lake temperatures in July for Crampton Lake and Ward Lake are not statistically significant (df = 200, P value = 0.2649). The means temperatures for the two lakes are not equal (Crampton: 15.35, Ward: 14.46) but they show no statistical significance. This result matches the result from Tukey's HSD test where also shows no significant difference (P value = 0.97)

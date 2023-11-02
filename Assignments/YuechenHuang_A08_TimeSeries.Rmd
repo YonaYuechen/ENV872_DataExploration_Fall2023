@@ -1,6 +1,6 @@
 ---
 title: "Assignment 8: Time Series Analysis"
-author: "Student Name"
+author: "Yuechen Huang"
 date: "Fall 2023"
 output: pdf_document
 geometry: margin=2.54cm
@@ -27,7 +27,20 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 * Set your ggplot theme
 
 ```{r}
+getwd()
 
+library(tidyverse)
+library(lubridate)
+library(trend)
+library(zoo)
+library(tseries)
+
+YH_Theme <- theme_classic(base_size = 14) + 
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "right",
+        legend.text = element_text(size = 10),
+        legend.title = element_text(size = 11))
+theme_set(YH_Theme)
 ```
 
 
@@ -35,7 +48,18 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 
 ```{r, message = FALSE}
 #1
+Ozone_Garinger_HS_2010 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2010_raw.csv")
+Ozone_Garinger_HS_2011 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2011_raw.csv")
+Ozone_Garinger_HS_2012 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2012_raw.csv")
+Ozone_Garinger_HS_2013 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2013_raw.csv")
+Ozone_Garinger_HS_2014 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2014_raw.csv")
+Ozone_Garinger_HS_2015 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2015_raw.csv")
+Ozone_Garinger_HS_2016 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2016_raw.csv")
+Ozone_Garinger_HS_2017 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2017_raw.csv")
+Ozone_Garinger_HS_2018 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2018_raw.csv")
+Ozone_Garinger_HS_2019 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2019_raw.csv")
 
+GaringerOzone <- rbind(Ozone_Garinger_HS_2010,Ozone_Garinger_HS_2011,Ozone_Garinger_HS_2012,Ozone_Garinger_HS_2013,Ozone_Garinger_HS_2014,Ozone_Garinger_HS_2015,Ozone_Garinger_HS_2016,Ozone_Garinger_HS_2017,Ozone_Garinger_HS_2018,Ozone_Garinger_HS_2019)
 ```
 
 ## Wrangle
@@ -50,13 +74,19 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 
 ```{r}
 # 3
+GaringerOzone$Date <- as.Date(GaringerOzone$Date, format = "%m/%d/%Y")
 
 # 4
+GaringerOzone_processed <- GaringerOzone %>% select(Date, Daily.Max.8.hour.Ozone.Concentration, DAILY_AQI_VALUE)
 
 # 5
+start_date <- as.Date("2010-01-01")
+end_date <- as.Date("2019-12-31")
+Days <- as.data.frame(seq(start_date, end_date, by = "1 day"))
+colnames(Days) <- "Date"
 
 # 6
-
+GaringerOzone <- left_join(Days, GaringerOzone_processed, by = "Date")
 
 ```
 
@@ -66,10 +96,10 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 
 ```{r}
 #7
-
+ggplot(GaringerOzone, aes(x = Date, y = Daily.Max.8.hour.Ozone.Concentration)) + geom_line() + geom_smooth(method = lm, se = FALSE) + ylab("Concentration (ppm)") + YH_Theme
 ```
 
->Answer:
+>Answer: There seems to have a decreasing trend over time as the smoothed line is dropping over time. 
 
 ## Time Series Analysis
 
@@ -79,17 +109,21 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 
 ```{r}
 #8
-
+summary(GaringerOzone$Daily.Max.8.hour.Ozone.Concentration)
+GaringerOzone$Daily.Max.8.hour.Ozone.Concentration <- na.approx(GaringerOzone$Daily.Max.8.hour.Ozone.Concentration)
+summary(GaringerOzone$Daily.Max.8.hour.Ozone.Concentration)
 ```
 
-> Answer: 
+> Answer: We didn't use a piecewise constant or spline interpolation because the data doesn't have short period of missing data.
 
 
 9. Create a new data frame called `GaringerOzone.monthly` that contains aggregated data: mean ozone concentrations for each month. In your pipe, you will need to first add columns for year and month to form the groupings. In a separate line of code, create a new Date column with each month-year combination being set as the first day of the month (this is for graphing purposes only)
 
 ```{r}
 #9
+GaringerOzone.monthly <- GaringerOzone %>% mutate(Year = year(Date), Month = month(Date)) %>% group_by(Year, Month) %>% summarise(mean_ozone_month = Daily.Max.8.hour.Ozone.Concentration)
 
+GaringerOzone.monthly <- mutate(GaringerOzone.monthly, Date = make_date(Year, Month, 1))
 ```
 
 

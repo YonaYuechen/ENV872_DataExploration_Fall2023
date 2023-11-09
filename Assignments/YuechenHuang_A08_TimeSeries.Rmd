@@ -26,7 +26,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 * Load the tidyverse, lubridate, zoo, and trend packages
 * Set your ggplot theme
 
-```{r}
+```{r, message=FALSE}
 getwd()
 
 library(tidyverse)
@@ -34,6 +34,7 @@ library(lubridate)
 library(trend)
 library(zoo)
 library(tseries)
+library(Kendall)
 
 YH_Theme <- theme_classic(base_size = 14) + 
   theme(axis.text = element_text(color = "black"), 
@@ -77,7 +78,8 @@ GaringerOzone <- rbind(Ozone_Garinger_HS_2010,Ozone_Garinger_HS_2011,Ozone_Garin
 GaringerOzone$Date <- as.Date(GaringerOzone$Date, format = "%m/%d/%Y")
 
 # 4
-GaringerOzone_processed <- GaringerOzone %>% select(Date, Daily.Max.8.hour.Ozone.Concentration, DAILY_AQI_VALUE)
+GaringerOzone_processed <- GaringerOzone %>% 
+  select(Date, Daily.Max.8.hour.Ozone.Concentration, DAILY_AQI_VALUE)
 
 # 5
 start_date <- as.Date("2010-01-01")
@@ -96,7 +98,9 @@ GaringerOzone <- left_join(Days, GaringerOzone_processed, by = "Date")
 
 ```{r}
 #7
-ggplot(GaringerOzone, aes(x = Date, y = Daily.Max.8.hour.Ozone.Concentration)) + geom_line() + geom_smooth(method = lm, se = FALSE) + ylab("Concentration (ppm)") + YH_Theme
+ggplot(GaringerOzone, aes(x = Date, y = Daily.Max.8.hour.Ozone.Concentration)) + 
+  geom_line() + geom_smooth(method = lm, se = FALSE) +
+  ylab("Concentration (ppm)") + YH_Theme
 ```
 
 >Answer: There seems to have a decreasing trend over time as the smoothed line is dropping over time. 
@@ -110,7 +114,8 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 ```{r}
 #8
 summary(GaringerOzone$Daily.Max.8.hour.Ozone.Concentration)
-GaringerOzone$Daily.Max.8.hour.Ozone.Concentration <- na.approx(GaringerOzone$Daily.Max.8.hour.Ozone.Concentration)
+GaringerOzone$Daily.Max.8.hour.Ozone.Concentration <- na.approx(
+  GaringerOzone$Daily.Max.8.hour.Ozone.Concentration)
 summary(GaringerOzone$Daily.Max.8.hour.Ozone.Concentration)
 ```
 
@@ -121,9 +126,13 @@ summary(GaringerOzone$Daily.Max.8.hour.Ozone.Concentration)
 
 ```{r}
 #9
-GaringerOzone.monthly <- GaringerOzone %>% mutate(Year = year(Date), Month = month(Date)) %>% group_by(Year, Month) %>% summarise(mean_ozone_month = Daily.Max.8.hour.Ozone.Concentration)
+GaringerOzone.monthly <- GaringerOzone %>% 
+  mutate(Year = year(Date), Month = month(Date)) %>% 
+  group_by(Year, Month) %>% 
+  summarise(mean_ozone_month = Daily.Max.8.hour.Ozone.Concentration)
 
-GaringerOzone.monthly <- mutate(GaringerOzone.monthly, Date = make_date(Year, Month, 1))
+GaringerOzone.monthly <- mutate(
+  GaringerOzone.monthly, Date = make_date(Year, Month, 1))
 ```
 
 
@@ -131,7 +140,12 @@ GaringerOzone.monthly <- mutate(GaringerOzone.monthly, Date = make_date(Year, Mo
 
 ```{r}
 #10
-
+GaringerOzone.daily.ts <- ts(GaringerOzone$Daily.Max.8.hour.Ozone.Concentration, 
+                             start = c(2010, 1, 1), 
+                             frequency = 365)
+GaringerOzone.monthly.ts <- ts(GaringerOzone.monthly$mean_ozone_month, 
+                             start = c(2010, 1), 
+                             frequency = 12)
 ```
 
 
@@ -139,7 +153,11 @@ GaringerOzone.monthly <- mutate(GaringerOzone.monthly, Date = make_date(Year, Mo
 
 ```{r}
 #11
+GaringerOzone.daily.ts.decom <- stl(GaringerOzone.daily.ts, s.window = "periodic")
+plot(GaringerOzone.daily.ts.decom)
 
+GaringerOzone.monthly.ts.decom <- stl(GaringerOzone.monthly.ts, s.window = "periodic")
+plot(GaringerOzone.monthly.ts.decom)
 
 ```
 
@@ -148,26 +166,30 @@ GaringerOzone.monthly <- mutate(GaringerOzone.monthly, Date = make_date(Year, Mo
 
 ```{r}
 #12
-
-
+monthly_trend <- SeasonalMannKendall(GaringerOzone.monthly.ts)
+summary(monthly_trend)
 
 ```
 
-> Answer: 
+> Answer: the seasonal Mann-Kendall is the most appropriate because there is seasonality in the data. Seasonal Mann-Kendall is the only monotonic trend analysis that can deal with seasonal data.
 
 13. Create a plot depicting mean monthly ozone concentrations over time, with both a geom_point and a geom_line layer. Edit your axis labels accordingly.
 
 ```{r}
 # 13
-
-
-
+monthly_Ozone_plot <-
+ggplot(GaringerOzone.monthly, aes(x = Date, y = mean_ozone_month)) +
+  geom_point() +
+  geom_line() +
+  ylab("Mean monthly ozone concentration (ppm)") +
+  geom_smooth( method = lm )
+print(monthly_Ozone_plot)
 
 ```
 
 14. To accompany your graph, summarize your results in context of the research question. Include output from the statistical test in parentheses at the end of your sentence. Feel free to use multiple sentences in your interpretation.
 
-> Answer: 
+> Answer: Both daily and monthly seasonal Mann-Kendall results showed that there is a monotonic trend each year (p = 0.00051075 for daily result, p = 0.00027247 for monthly result). The decreasing trend can also be seen in the monthly_Ozone_plot. 
 
 15. Subtract the seasonal component from the `GaringerOzone.monthly.ts`. Hint: Look at how we extracted the series components for the EnoDischarge on the lesson Rmd file.
 
@@ -176,13 +198,14 @@ GaringerOzone.monthly <- mutate(GaringerOzone.monthly, Date = make_date(Year, Mo
 ```{r}
 #15
 
+Monthly_nonseasonal_Components <- as.data.frame(GaringerOzone.monthly.ts.decom$time.series[,2:3])
 
+Monthly_nonseasonal_ts <- ts(Monthly_nonseasonal_Components, start = c(2010,1), frequency = 12)
 
 #16
 
-
-
-
+nonseasonal_trend <- MannKendall(Monthly_nonseasonal_ts)
+summary(nonseasonal_trend)
 ```
 
-> Answer: 
+> Answer: The p value for nonseasonal Mann Kendall test (0.024261) is much larger than the p value for seasonal Mann-Kendall (0.00027247). This infer that if we ignore the seasonality of the data, the decreasing trend may be more implicit. 

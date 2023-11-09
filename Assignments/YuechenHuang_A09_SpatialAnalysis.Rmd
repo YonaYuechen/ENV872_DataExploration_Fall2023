@@ -24,7 +24,7 @@ This exercise accompanies the lessons in Environmental Data Analytics (ENV872L) 
 1. Import libraries: tidyverse, sf, leaflet, here, and mapview
 2. Execute the `here()` command to display the current project directory
 
-```{r Prepare workspace, error=F, warning=F}
+```{r Prepare workspace, error=F, message=FALSE, warning=FALSE}
 #1. 
 library(tidyverse)
 library(sf)
@@ -60,8 +60,8 @@ mapView(Nebraska_sf)
 
 6. What is the EPSG code of the Counties dataset? Is this a geographic or a projected coordinate reference system? (Or, does this CRS use angular or planar coordinate units?) To what datum is this CRS associated? (Tip: look for the EPSG code on <https://spatialreference.org> and examine the link for "Well Known Text as HTML" or "Human-Readable OGC WKT"...)
 
-> ANSWER: The EPSG code of Nebraska is 4269 which is a Geodetic >coordinate system (based on angular coordinate units). 
->The datum is based on North_American_Datum_1983. 
+> ANSWER: The EPSG code of Nebraska is 4269 which is a Geodetic coordinate system (based on angular coordinate units). 
+The datum is based on North_American_Datum_1983. 
 
 
 ### Read in gage locations csv as a dataframe, then display the column names it contains
@@ -166,8 +166,11 @@ Now we can examine where the flooding appears most acute by visualizing gage hei
 
 ```{r map gage sites}
 #Map the points, sized by gage height
-
-
+mapView(Nebraska_sf, col.regions = "#8486D7", 
+        layer.name = "Nebraska Counties") +
+  mapView(Flow_Gage_sf_join, zcol = "gage_ht", 
+          col.regions = "#F5A20F", cex = "gage_ht",
+          layer.name = "Gage Height")
 ```
 
 ---
@@ -184,10 +187,12 @@ Up next we will do some spatial analysis with our data. To prepare for this, we 
 
 ```{r spatial analysis}
 #20 Transform the counties and gage location datasets to UTM Zone 14
-
+counties_UTM <- st_transform(Nebraska_sf, crs = 32614)
+Gage_UTM <- st_transform(Flow_Gage_sf_join, crs = 32614)
 
 #21 Plot the data
-
+ggplot() + geom_sf(data = counties_UTM, fill = "#8486D7") + 
+  geom_sf(data = Gage_UTM, color = "#F5A20F") + ggtitle("NWIS Gage Locations in Nebraska using UTM Zone 14N projection", subtitle = "Yuechen Huang")
 
 ```
 
@@ -205,13 +210,18 @@ Now let's zoom into a particular county and examine the gages located there.
 
 ```{r spatial selection}
 #22 Select the county
-
+Dawson_UTM <- counties_UTM %>% filter(NAME == "Dawson")
 
 #23 Spatially select gages within the selected county
-
+Gage_Dawson <- Gage_UTM[Dawson_UTM, ]
 
 #24 Plot
-
+mapView(Nebraska_sf, col.regions = "#8486D7", 
+        layer.name = "Nebraska Counties") +
+  mapView(Dawson_UTM, col.regions = "#6fa8dc",
+          layer.name = "Dawson") + 
+  mapView(Gage_Dawson, col.regions = "#F5A20F",
+          layer.name = "Gage sites in Dawson")
 
 
 ```

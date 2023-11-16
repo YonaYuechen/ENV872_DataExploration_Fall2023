@@ -1,7 +1,13 @@
 ---
-title: "Assignment 10: Data Scraping"
+title: 'Assignment 10: Data Scraping'
 author: "Yuechen Huang"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+  word_document: default
+editor_options:
+  chunk_output_type: inline
 ---
 
 ## OVERVIEW
@@ -23,7 +29,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on data sc
 * Load the packages `tidyverse`, `rvest`, and any others you end up using.
 * Check your working directory
 
-```{r 1. Project Setup, message=FALSE, warning=FALSE}
+```{r 1. Project Setup, include = FALSE}
 #1 
 library(tidyverse)
 library(rvest)
@@ -41,7 +47,8 @@ Indicate this website as the as the URL to be scraped. (In other words, read the
 
 ```{r set.the.scraping.website}
 #2 
-Durham_LWSP_web <- read_html("https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2022")
+Durham_LWSP_web <- read_html(
+  "https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2022")
 Durham_LWSP_web
 ```
 
@@ -121,8 +128,7 @@ Scrape.fun <- function(the_PWSID,the_year){
   Ownership <- the_website %>% html_nodes("div+ table tr:nth-child(2) td:nth-child(4)") %>% html_text()
   MGD <- the_website %>% html_nodes("th~ td+ td") %>% html_text()
   
-  Month_wrong_order <- the_website %>% html_nodes(".fancy-table:nth-child(31) tr+ tr th") %>% html_text()
-  df_raw <- data.frame("Month" = Month_wrong_order,
+  df_raw <- data.frame("Month" = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
                         "Year" = rep(the_year,12),
                         "Maximum_Day_Use" = as.numeric(MGD))
 
@@ -140,8 +146,8 @@ Scrape.fun <- function(the_PWSID,the_year){
 
 ```{r fetch.and.plot.Durham.2015.data}
 #7 
-new_df_using_func <- Scrape.fun("03-32-010",2015)
-ggplot(new_df_using_func,aes(x=Date,y=Maximum_Day_Use)) + 
+Durham_df_2015 <- Scrape.fun("03-32-010",2015)
+ggplot(Durham_df_2015,aes(x=Date,y=Maximum_Day_Use)) + 
   geom_line() + 
   geom_smooth(method="loess",se=FALSE) +
   labs(title = paste("Maximum daily water usage in Durham in 2015"),
@@ -155,8 +161,15 @@ ggplot(new_df_using_func,aes(x=Date,y=Maximum_Day_Use)) +
 
 ```{r fetch.and.plot.Asheville.2015.data}
 #8 
-
-
+Asheville_df_2015 <- Scrape.fun("01-11-010",2015) # can't run this code
+Combined_df_2015 <- rbind(Durham_df_2015,Asheville_df_2015)
+Plot_Ash_Dur_2015 <- ggplot(Combined_df_2015,aes(x=Date,y=Maximum_Day_Use, color = Water_System_Name)) + 
+  geom_line() + 
+  labs(title = paste("Maximum daily water usage in Durham and Asheville in 2015"),
+       y="Maximum Day Use (MGD)",
+       x="Date",
+       color = "Water System")
+Plot_Ash_Dur_2015
 ```
 
 
@@ -166,10 +179,17 @@ ggplot(new_df_using_func,aes(x=Date,y=Maximum_Day_Use)) +
 
 ```{r fetch.and.plot.Asheville.multiyear.data }
 #9 
+the_years <- rep(2010:2021)
+the_PWSID_Ash <- "01-11-010"
 
-
+the_dfs_2010_2021 <- map2(the_PWSID_Ash,the_years,Scrape.fun) %>% bind_rows()
+Plot_Ash_2010_2021 <- ggplot(the_dfs_2010_2021,aes(x=Date,y=Maximum_Day_Use)) + 
+  geom_line() + geom_smooth(method="loess",se=FALSE) + 
+  labs(title = paste("Maximum daily water usage in Asheville from 2010 to 2021"),
+       y="Maximum Day Use (MGD)",
+       x="Date")
+Plot_Ash_2010_2021
 ```
 
 Question: Just by looking at the plot (i.e. not running statistics), does Asheville have a trend in water usage over time?
-> Answer:
->
+> Answer: From 2010 to 2015, The water usage decreases over time while from 2015 to 2021, the water usage increases.

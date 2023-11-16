@@ -23,12 +23,13 @@ This exercise accompanies the lessons in Environmental Data Analytics on data sc
 * Load the packages `tidyverse`, `rvest`, and any others you end up using.
 * Check your working directory
 
-```{r 1. Project Setup, message = FALSE}
+```{r 1. Project Setup, message=FALSE, warning=FALSE}
 #1 
 library(tidyverse)
 library(rvest)
 library(here)
 
+getwd()
 ```
 
 2. We will be scraping data from the NC DEQs Local Water Supply Planning website, specifically the Durham's 2022 Municipal Local Water Supply Plan (LWSP): 
@@ -40,7 +41,8 @@ Indicate this website as the as the URL to be scraped. (In other words, read the
 
 ```{r set.the.scraping.website}
 #2 
-
+Durham_LWSP_web <- read_html("https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2022")
+Durham_LWSP_web
 ```
 
 3. The data we want to collect are listed below:
@@ -59,7 +61,14 @@ In the code chunk below scrape these values, assigning them to four separate var
 
 ```{r scrape.the.data}
 #3 
-
+water_system <- Durham_LWSP_web %>% 
+  html_nodes("div+ table tr:nth-child(1) td:nth-child(2)") %>% html_text()
+PWSID <- Durham_LWSP_web %>% 
+  html_nodes("td tr:nth-child(1) td:nth-child(5)") %>% html_text()
+Ownership <- Durham_LWSP_web %>% 
+  html_nodes("div+ table tr:nth-child(2) td:nth-child(4)") %>% html_text()
+MGD <- Durham_LWSP_web %>% 
+  html_nodes("th~ td+ td") %>% html_text()
 ```
 
 
@@ -73,16 +82,57 @@ In the code chunk below scrape these values, assigning them to four separate var
 
 ```{r create.a.dataframe.from.scraped.data}
 #4 
+Month_wrong_order <- Durham_LWSP_web %>% 
+  html_nodes(".fancy-table:nth-child(31) tr+ tr th") %>% html_text()
+df_raw <- data.frame("Month" = Month_wrong_order,
+                     "Year" = rep(2022,12),
+                     "Maximum_Day_Use" = as.numeric(MGD))
 
-#5 
+df_processed <- df_raw %>% mutate(
+  "Water_System_Name" = !!water_system,
+  "PWSID" = !!PWSID,
+  "Ownership" = !!Ownership,
+  "Date" = my(paste(Month,"-",Year)))
 
+#5
+mytheme <- theme_classic(base_size = 12) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "right")
+theme_set(mytheme)
+
+ggplot(df_processed,aes(x=Date,y=Maximum_Day_Use)) + 
+  geom_line() + 
+  geom_smooth(method="loess",se=FALSE) +
+  labs(title = paste("2022 Maximum daily water usage in",Ownership),
+       subtitle = PWSID,
+       y="Maximum Day Use (MGD)",
+       x="Date")
 ```
 
 6. Note that the PWSID and the year appear in the web address for the page we scraped. Construct a function using your code above that can scrape data for any PWSID and year for which the NC DEQ has data. **Be sure to modify the code to reflect the year and site (pwsid) scraped**.
 
 ```{r construct.a.scraping.function}
 #6. 
+Scrape.fun <- function(the_PWSID,the_year){
+  the_website <- read_html(paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=', the_PWSID, '&year=', the_year))
+  
+  water_system <- the_website %>% html_nodes("div+ table tr:nth-child(1) td:nth-child(2)") %>% html_text()
+  PWSID <- the_website %>% html_nodes("td tr:nth-child(1) td:nth-child(5)") %>% html_text()
+  Ownership <- the_website %>% html_nodes("div+ table tr:nth-child(2) td:nth-child(4)") %>% html_text()
+  MGD <- the_website %>% html_nodes("th~ td+ td") %>% html_text()
+  
+  Month_wrong_order <- the_website %>% html_nodes(".fancy-table:nth-child(31) tr+ tr th") %>% html_text()
+  df_raw <- data.frame("Month" = Month_wrong_order,
+                        "Year" = rep(the_year,12),
+                        "Maximum_Day_Use" = as.numeric(MGD))
 
+  df_processed <- df_raw %>% mutate(
+    "Water_System_Name" = !!water_system,
+    "PWSID" = !!the_PWSID,
+    "Ownership" = !!Ownership,
+    "Date" = my(paste(Month,"-",Year)))
+  return(df_processed)
+}
 
 ```
 
@@ -90,7 +140,14 @@ In the code chunk below scrape these values, assigning them to four separate var
 
 ```{r fetch.and.plot.Durham.2015.data}
 #7 
-
+new_df_using_func <- Scrape.fun("03-32-010",2015)
+ggplot(new_df_using_func,aes(x=Date,y=Maximum_Day_Use)) + 
+  geom_line() + 
+  geom_smooth(method="loess",se=FALSE) +
+  labs(title = paste("Maximum daily water usage in Durham in 2015"),
+       subtitle = 03-32-010,
+       y="Maximum Day Use (MGD)",
+       x="Date")
 
 ```
 
